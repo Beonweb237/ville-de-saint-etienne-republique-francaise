@@ -1,0 +1,178 @@
+import { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router'
+import { Search, Menu, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+const navLinks = [
+  { label: 'Accueil', path: '/' },
+  { label: 'Services', path: '/services' },
+  { label: 'Demarches', path: '/demarches' },
+  { label: 'Actualites', path: '/actualites' },
+  { label: 'Contact', path: '/contact' },
+]
+
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [searchFocused, setSearchFocused] = useState(false)
+  const [searchValue, setSearchValue] = useState('')
+  const location = useLocation()
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [mobileOpen])
+
+  return (
+    <>
+      {/* Skip link */}
+      <a href="#contenu" className="skip-link">
+        Aller au contenu
+      </a>
+
+      {/* Navbar */}
+      <header
+        className="fixed top-0 left-0 right-0 z-50 bg-white transition-shadow duration-300"
+        style={{
+          boxShadow: scrolled ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+          height: 80,
+        }}
+        role="banner"
+      >
+        <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-6 lg:px-12">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-3 shrink-0" aria-label="Accueil - Ville de Saint-Etienne">
+            <div className="flex flex-col">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-bleu-marianne leading-tight">
+                Republique Francaise
+              </span>
+              <span className="text-[13px] font-medium text-gris-fonce leading-tight mt-0.5">
+                Ville de Saint-Etienne
+              </span>
+            </div>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-8" aria-label="Navigation principale">
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.path
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className="relative text-sm font-medium text-gris-fonce transition-colors duration-200 hover:text-bleu-marianne py-1"
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {link.label}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeNav"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-bleu-marianne"
+                      transition={{ duration: 0.2 }}
+                    />
+                  )}
+                </Link>
+              )
+            })}
+          </nav>
+
+          {/* Right side: Search + Login */}
+          <div className="hidden lg:flex items-center gap-4">
+            <div
+              className="flex items-center rounded border border-gris-clair bg-white transition-all duration-300"
+              style={{ width: searchFocused ? 400 : 280 }}
+            >
+              <Search className="ml-3 h-4 w-4 text-gris-moyen shrink-0" aria-hidden="true" />
+              <input
+                type="search"
+                placeholder="Rechercher un service, une demarche..."
+                className="h-10 w-full bg-transparent px-3 text-sm text-gris-fonce placeholder:text-gris-moyen focus:outline-none"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                aria-label="Rechercher"
+              />
+            </div>
+            <Link
+              to="/contact"
+              className="rounded-lg bg-bleu-marianne px-5 py-2.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-bleu-marianne-clair"
+            >
+              Connexion
+            </Link>
+          </div>
+
+          {/* Mobile hamburger */}
+          <button
+            className="lg:hidden flex items-center justify-center w-10 h-10 rounded-md text-gris-fonce hover:bg-gris-tres-clair transition-colors"
+            onClick={() => setMobileOpen(true)}
+            aria-label="Ouvrir le menu"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
+          >
+            <Menu className="h-6 w-6" />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile menu overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            id="mobile-menu"
+            className="fixed inset-0 z-[100] bg-bleu-marianne"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] as [number, number, number, number] }}
+          >
+            <div className="flex h-full flex-col px-6 py-6">
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-center w-10 h-10 rounded-md text-white hover:bg-white/10 transition-colors"
+                  aria-label="Fermer le menu"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              <nav className="mt-12 flex flex-col gap-8" aria-label="Navigation mobile">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className="text-[32px] font-bold text-white leading-tight"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+              <div className="mt-auto">
+                <p className="text-white/50 text-sm">
+                  Liberte, Egalite, Fraternite
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
