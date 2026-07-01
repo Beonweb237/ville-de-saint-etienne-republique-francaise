@@ -148,7 +148,7 @@ export default function Footer() {
             &copy; 2025 &mdash; Republique Francaise. Tous droits reserves.
             {' '}&mdash; Con&ccedil;u par{' '}
             <a
-              href="https://beonweb.fr"
+              href="https://www.beonweb.cm/"
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-white transition-colors"
