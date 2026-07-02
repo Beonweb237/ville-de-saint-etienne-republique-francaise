@@ -146,15 +146,6 @@ export default function Footer() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-white/50">
             &copy; 2025 &mdash; Republique Francaise. Tous droits reserves.
-            {' '}&mdash; Con&ccedil;u par{' '}
-            <a
-              href="https://www.beonweb.cm/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-white transition-colors"
-            >
-              Beonweb
-            </a>
           </p>
           <div className="flex flex-wrap gap-x-4 gap-y-2">
             <Link to="/a-propos" className="text-xs text-white/50 hover:text-white transition-colors">
